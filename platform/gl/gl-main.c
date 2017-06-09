@@ -26,8 +26,8 @@ struct ui ui;
 fz_context* ctx = NULL;
 GLFWwindow* window = NULL;
 
-static const int zoom_list[] = { 18, 24, 36, 48, 54, 64, 72, 84, 96, 108, 120, 
-    132, 144, 156, 168, 180, 192, 204, 216, 228, 240, 252, 264, 276, 288, 300, 
+static const int zoom_list[] = { 18, 24, 36, 48, 54, 64, 72, 84, 96, 108, 120,
+    132, 144, 156, 168, 180, 192, 204, 216, 228, 240, 252, 264, 276, 288, 300,
     312, 324, 336, 348, 360, 372, 384, 396, 408, 420, 432, 446, 464, 512 };
 
 #define MINRES (zoom_list[0])
@@ -119,7 +119,8 @@ static GLuint get_random_backcolor(void)
     srand(time(0)); //use current time as seed for random generator
     int random_variable = rand() % nelem(sa_bkcolor_list);
 
-    return sa_bkcolor_list[random_variable];
+    //return sa_bkcolor_list[random_variable];
+	return 0x308014;
     /*return (GLuint)random_variable;*/
 }
 
@@ -269,10 +270,10 @@ void texture_from_pixmap(struct texture* tex, fz_pixmap* pix)
 
     if (has_ARB_texture_non_power_of_two) {
         if (tex->w > max_texture_size || tex->h > max_texture_size)
-            fz_warn(ctx, "texture size (%d x %d) exceeds implementation limit (%d)", 
+            fz_warn(ctx, "texture size (%d x %d) exceeds implementation limit (%d)",
                 tex->w, tex->h, max_texture_size);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex->w, tex->h, 0, 
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex->w, tex->h, 0,
             pix->n == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pix->samples);
         tex->s = 1;
         tex->t = 1;
@@ -280,11 +281,11 @@ void texture_from_pixmap(struct texture* tex, fz_pixmap* pix)
         int w2 = next_power_of_two(tex->w);
         int h2 = next_power_of_two(tex->h);
         if (w2 > max_texture_size || h2 > max_texture_size)
-            fz_warn(ctx, "texture size (%d x %d) exceeds implementation limit (%d)", 
+            fz_warn(ctx, "texture size (%d x %d) exceeds implementation limit (%d)",
                 w2, h2, max_texture_size);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w2, h2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->w, tex->h, 
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex->w, tex->h,
             pix->n == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pix->samples);
         tex->s = (float)tex->w / w2;
         tex->t = (float)tex->h / h2;
@@ -721,17 +722,17 @@ static void do_forms(float xofs, float yofs)
 static void toggle_fullscreen(void)
 {
 #if 1
-	 GLFWmonitor *monitor = glfwGetPrimaryMonitor(); 
+	 GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	static int win_x = 0, win_y = 0;
 	static int win_w = 100, win_h = 100;
-	 static int win_rr = 60; 
+	 static int win_rr = 60;
 	if (!isfullscreen)
 	{
-		 const GLFWvidmode *mode = glfwGetVideoMode(monitor); 
-		 win_rr = mode->refreshRate; 
+		 const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+		 win_rr = mode->refreshRate;
 		glfwGetWindowPos(window, &win_x, &win_y);
 		glfwGetWindowSize(window, &win_w, &win_h);
-        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate); 
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 
         // glfwSetWindowPos(window, 0, 0);
         // glfwSetWindowSize(window, screen_w, screen_h);
@@ -742,7 +743,7 @@ static void toggle_fullscreen(void)
 	{
         // glfwSetWindowPos(window, win_x, win_y - SCREEN_FURNITURE_H);
         // glfwSetWindowSize(window, win_w, win_h);
-         glfwSetWindowMonitor(window, NULL, win_x, win_y, win_w, win_h, win_rr); 
+         glfwSetWindowMonitor(window, NULL, win_x, win_y, win_w, win_h, win_rr);
 		isfullscreen = 0;
 	}
 #endif
@@ -1035,10 +1036,16 @@ static void do_app(void)
             search_input.q = search_input.end;
             break;
         case 'k':
-            move_backward(canvas_h / 7);
+			number = fz_maxi(number, 1);
+				while (number--)
+					smart_move_backward();
             break;
+//            move_backward(canvas_h / 7);
         case 'j':
-            move_forward(canvas_h / 7);
+            //move_forward(canvas_h / 7);
+            number = fz_maxi(number, 1);
+            while (number--)
+                smart_move_forward();
             break;
         case 'h':
             scroll_x -= canvas_w / 10;
@@ -1152,7 +1159,7 @@ static void do_canvas(void)
     float x, y;
 
     if (oldpage != currentpage || oldzoom != currentzoom || oldrotate != currentrotate ||
-            g_oldinvertcolor != g_isinvertcolor || g_old_x_shrink != g_x_shrink || 
+            g_oldinvertcolor != g_isinvertcolor || g_old_x_shrink != g_x_shrink ||
             g_old_y_shrink != g_y_shrink ) {
         render_page();
         update_title();
