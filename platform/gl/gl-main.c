@@ -814,10 +814,10 @@ static void smart_move_backward(void)
             }
         } else {
             scroll_y = page_tex.h;
-            scroll_x -= canvas_w * 9 / 10;
+            scroll_x -= canvas_w * 2 / 10;
         }
     } else {
-        scroll_y -= canvas_h * 9 / 10;
+        scroll_y -= canvas_h * 2 / 10;
     }
 }
 
@@ -844,10 +844,10 @@ static void smart_move_forward(void)
             }
         } else {
             scroll_y = 0;
-            scroll_x += canvas_w * 9 / 10;
+            scroll_x += canvas_w * 2 / 10;
         }
     } else {
-        scroll_y += canvas_h * 9 / 10;
+        scroll_y += canvas_h * 2 / 10;//9
     }
 }
 
