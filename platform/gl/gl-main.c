@@ -115,12 +115,12 @@ static GLuint get_random_backcolor(void)
         0xfff6da, //sandbox
         0xe6e6e6, //greyscale
         0xf1feee, //sprout
+        0x308014
     };
     srand(time(0)); //use current time as seed for random generator
     int random_variable = rand() % nelem(sa_bkcolor_list);
 
-    //return sa_bkcolor_list[random_variable];
-	return 0x308014;
+    return sa_bkcolor_list[random_variable];
     /*return (GLuint)random_variable;*/
 }
 
@@ -835,18 +835,30 @@ static void move_forward(int row_sz)
 
 static void smart_move_forward(void)
 {
-    if (scroll_y + canvas_h >= page_tex.h) {
-        if (scroll_x + canvas_w >= page_tex.w) {
-            if (currentpage + 1 < fz_count_pages(ctx, doc)) {
+    //printf("1:y+h= %d,page h:%d\n", scroll_y+canvas_h, page_tex.h);
+    if (scroll_y + canvas_h >= page_tex.h) 
+    {
+        //printf("2:x+w= %d,page w:%d\n", scroll_x+canvas_w, page_tex.w);
+        //if (scroll_x + canvas_w >= page_tex.w) 
+        {
+            //printf("3:currentpage %d,fz_count_pages(ctx,doc):%d\n",currentpage+1,fz_count_pages(ctx,doc));
+            if (currentpage + 1 < fz_count_pages(ctx, doc)) 
+            {
+                printf("page ++\n");
                 scroll_x = 0;
                 scroll_y = 0;
                 currentpage += 1;
             }
-        } else {
-            scroll_y = 0;
-            scroll_x += canvas_w * 2 / 10;
         }
-    } else {
+        //else 
+        {
+         //   printf("4:\n");
+          //  scroll_y = 0;
+           // scroll_x += canvas_w * 2 / 10;
+        }
+    } else 
+    {
+        //printf("5:\n");
         scroll_y += canvas_h * 2 / 10;//9
     }
 }
@@ -1458,6 +1470,7 @@ static void on_scroll(GLFWwindow* window, double x, double y)
 {
     ui.scroll_x = x;
     ui.scroll_y = y;
+    printf("ui x:%d,y:%d\n",ui.scroll_x,ui.scroll_y);
     run_main_loop();
     ui.scroll_x = ui.scroll_y = 0;
 }
