@@ -9,6 +9,7 @@ HAVE_LIBDL ?= yes
 
 
 CFLAGS += -Wall
+CFLAGS += -fno-stack-check
 
 ifeq (,$(findstring -fembed-bitcode,$(XCFLAGS)))
 # clang does not support these in combination with -fembed-bitcode
